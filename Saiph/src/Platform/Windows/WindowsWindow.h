@@ -2,7 +2,9 @@
 
 #include "Saiph/Window.h"
 
-struct GLFWwindow;
+#include "Saiph/Renderer/GraphicsContext.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Saiph {
 
@@ -10,6 +12,7 @@ namespace Saiph {
 	class WindowsWindow : public Window
 	{
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 
 		struct WindowData {
 			std::string Title;

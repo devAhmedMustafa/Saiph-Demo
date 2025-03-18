@@ -14,6 +14,8 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Saiph/vendor/GLFW/include"
 IncludeDir["Glad"] = "Saiph/vendor/Glad/include"
 IncludeDir["ImGui"] = "Saiph/vendor/imgui"
+IncludeDir["glm"] = "Saiph/vendor/glm"
+
 
 include "Saiph/vendor/GLFW"
 include "Saiph/vendor/Glad"
@@ -22,8 +24,10 @@ include "Saiph/vendor/imgui"
 
 project "Saiph"
 	location "Saiph"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -37,6 +41,10 @@ project "Saiph"
 		"%{prj.name}/src/**.cpp"
 	}
 
+	defines {
+		"_CRT_SECURE_NO_WARNINGS"
+	}
+
 	includedirs
 	{
 		"%{prj.name}/src",
@@ -44,6 +52,7 @@ project "Saiph"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}",
 
 	}
 
@@ -55,8 +64,6 @@ project "Saiph"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 		buildoptions {"/utf-8"}
 
@@ -68,31 +75,32 @@ project "Saiph"
 			"_WINDLL"
 		}
 
-		postbuildcommands {
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-		}
-
 		
 
 	filter "configurations:Debug"
 		defines "SP_DEBUG"
+		runtime "Debug"
 		buildoptions "/MDd"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "SP_RELEASE"
+		runtime "Release"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "SP_DIST"
+		runtime "Release"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"
 
 project "SandBox"
 	location "SandBox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -106,7 +114,9 @@ project "SandBox"
 	includedirs
 	{
 		"$(SolutionDir)Saiph/vendor/spdlog/include",
-		"$(SolutionDir)Saiph/src"
+		"$(SolutionDir)Saiph/src",
+		"${SolutionDir}Saiph/vendor",
+		"%{IncludeDir.glm}",
 	}
 
 	links
@@ -115,8 +125,6 @@ project "SandBox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 		buildoptions {"/utf-8"}
 
@@ -127,15 +135,18 @@ project "SandBox"
 
 	filter "configurations:Debug"
 		defines "SP_DEBUG"
+		runtime "Debug"
 		buildoptions "/MDd"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "SP_RELEASE"
+		runtime "Release"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "SP_DIST"
+		runtime "Release"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"

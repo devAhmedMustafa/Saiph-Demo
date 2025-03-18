@@ -8,7 +8,8 @@ public:
 	}
 
 	void OnUpdate() override {
-
+		if (Saiph::Input::IsKeyPressed(SP_KEY_TAB))
+			SP_INFO("Tab key is pressed!");
 	}
 
 	void OnEvent(Saiph::Event& event) override {
@@ -21,7 +22,6 @@ public:
 	SandBox() {
 		SP_INFO("App started");
 		PushLayer(new ExampleLayer());
-		PushOverlay(new Saiph::ImGuiLayer());
 	}
 
 	~SandBox() {

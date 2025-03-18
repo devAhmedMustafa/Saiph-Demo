@@ -31,5 +31,5 @@ namespace Saiph {
 #define SP_TRACE(...)	   ::Saiph::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define SP_INFO(...)       ::Saiph::Log::GetClientLogger()->info(__VA_ARGS__)
 #define SP_WARN(...)       ::Saiph::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define SP_ERROR(...)      ::Saiph::Log::GetClientLogger()->error(__VA_ARGS__)
+#define SP_ERR(...)      ::Saiph::Log::GetClientLogger()->error(__VA_ARGS__)
 #define SP_FATAL(...)      ::Saiph::Log::GetClientLogger()->fatal(__VA_ARGS__)

@@ -2,6 +2,7 @@
 
 #ifdef SP_PLATFORM_WINDOWS
 
+#if SP_DYNAMIC_LINK
 	#ifdef SP_BUILD_DLL
 		#define SAIPH_API __declspec(dllexport)
 
@@ -9,6 +10,9 @@
 		#define SAIPH_API __declspec(dllimport)
 
 	#endif
+#else
+	#define SAIPH_API
+#endif
 
 #else
 	#error Saiph only supports windows
