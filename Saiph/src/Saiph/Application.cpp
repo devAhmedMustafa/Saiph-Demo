@@ -1,9 +1,9 @@
 #include "sppch.h"
 #include "Application.h"
 #include "Saiph/Log.h"
-#include <glad/glad.h>
 
 #include "Input.h"
+#include "Renderer/Renderer.h"
 
 namespace Saiph {
 
@@ -22,26 +22,32 @@ namespace Saiph {
 
 		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			0.5f, -0.5f, 0.0f,
-			0.0f, 0.5f, 0.0f
-		};
-
-		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
 		BufferLayout layout = {
 			{ShaderDataType::Float3, "a_Position"}
 		};
 
-		m_VertexBuffer->SetLayout(layout);
 
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		m_SquareVA.reset(VertexArray::Create());
 
-		unsigned int indices[3] = { 0, 1, 2 };
+		float square_vertices[3 * 4] = {
+			-0.5f, -0.5f, 0.0f,
+			0.5f, -0.5f, 0.0f,
+			0.5f, 0.5f, 0.0f,
+			-0.5f, 0.5f, 0.0f
 
-		m_IndexBuffer.reset(IndexBuffer::Create(indices, 3));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+		};
+
+		std::shared_ptr<VertexBuffer> squareVB;
+		squareVB.reset(VertexBuffer::Create(square_vertices, sizeof(square_vertices)));
+
+		squareVB->SetLayout(layout);
+		m_SquareVA->AddVertexBuffer(squareVB);
+
+		unsigned int square_indices[6] = { 0, 1, 2, 2, 3, 0 };
+
+		std::shared_ptr<IndexBuffer> squareIB;
+		squareIB.reset(IndexBuffer::Create(square_indices, sizeof(square_indices) / sizeof(unsigned int)));
+		m_SquareVA->SetIndexBuffer(squareIB);
 
 		const std::string vertexSrc = R"(
 			#version 330 core
@@ -92,12 +98,15 @@ namespace Saiph {
 	void Application::Run() {
 		while (m_Running)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
 
 			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_SquareVA);
+
+			Renderer::EndScene();
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
